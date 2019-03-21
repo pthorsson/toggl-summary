@@ -3,19 +3,18 @@
     "module": "commonjs",
     "jsx": "react",
     "target": "es5",
+    "lib": ["es2018", "dom"],
     "noImplicitAny": true,
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
-    "experimentalDecorators": true,
     "paths": {
       "*": ["node_modules/*"],
-      "@main/*": ["./src/main/*"],
-      "@ui/*": ["./src/ui/*"],
-      "@shared/*": ["./src/shared/*"]
+      "@lib/*": ["./src/lib/*"],
+      "@components/*": ["./src/components/*"],
     }
   },
   "include": [
-    "src/**/*"
+    "./src/**/*"
   ]
 }

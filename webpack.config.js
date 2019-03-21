@@ -2,6 +2,7 @@ const path = require('path');
 
 // Plugins
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = (env = {}) => ({
 
@@ -61,21 +62,28 @@ module.exports = (env = {}) => ({
         path.resolve('./src'),
         path.resolve('./node_modules'),
       ],
-      extensions: ['.ts', '.tsx', '.js']
+      extensions: ['.ts', '.tsx', '.js'],
+      plugins: [
+        new TsconfigPathsPlugin({ configFile: 'tsconfig.json' })
+      ]
     },
 
     // Plugins
-    plugins: env.prod ? [
-      // Prod plugins
-    ] : [
-      new CopyWebpackPlugin([
-        {
-          from: 'static/**/*.{html,ico,svg,}',
-          transformPath: (targetPath) => {
-            return targetPath.replace('static/', '/');
-          }
-        },
-      ])
-    ]
+    plugins: [
+      // General plugins
+      ...(env.prod ? [
+          // Prod plugins
+        ] : [
+          // Dev plugins
+          new CopyWebpackPlugin([
+            {
+              from: 'static/**/*.{html,ico,svg,}',
+              transformPath: (targetPath) => {
+                return targetPath.replace('static/', '/');
+              }
+            },
+          ])
+        ])
+      ]
 
 });
