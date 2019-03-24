@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { getMonth } from 'lib/get-month';
+import weekendsApi from 'lib/weekends-api';
 
 export const AppContext = React.createContext<IContext|null>(null);
 
@@ -11,6 +12,11 @@ export interface IState {
   month: number;
   monthName: string;
   days: Array<any>;
+  weekendData: Array<any>;
+  togglData: Array<any>;
+  isLoading: boolean;
+  weekendDataLoading: boolean;
+  togglDataLoading: boolean;
 }
 
 export interface IContext {
@@ -24,27 +30,54 @@ export default class AppProvider extends React.Component<IProps, IState> {
   constructor(props?: IProps, state?: IState) {
     super(props, state);
 
-    const date = new Date();
-
-    const monthData = getMonth(date.getFullYear(), date.getMonth() + 1);
-
     this.state = {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      monthName: monthData.date.format('MMMM'),
-      days: monthData.days
+      year: null,
+      month: null,
+      monthName: null,
+      days: [],
+      weekendData: [],
+      togglData: [],
+      isLoading: false,
+      weekendDataLoading: false,
+      togglDataLoading: false
     };
+  }
+
+  componentDidMount() {
+    const date = new Date();
+    this.setMonth(date.getFullYear(), date.getMonth() + 1); 
   }
 
   public setMonth(year: number, month: number) {
     const monthData = getMonth(year, month);
+    let weekendData;
 
     this.setState({
       year,
       month,
       monthName: monthData.date.format('MMMM'),
-      days: monthData.days
+      days: monthData.days,
+      weekendDataLoading: true,
+      isLoading: true
     });
+
+    weekendsApi.loadDays(monthData.days[0].dateStr, monthData.days[41].dateStr)
+      .then(data => {
+        const monthData = getMonth(year, month);
+
+        monthData.days.forEach((day, i) => {
+          day.isRedDay = data[i].redDay;
+          day.isWorkFree = data[i].workFree;
+          day.week = data[i].week;
+        });
+
+        this.setState({
+          days: monthData.days,
+          isLoading: false,
+          weekendDataLoading: false,
+        });
+      });
+
   }
 
   public nextMonth() {

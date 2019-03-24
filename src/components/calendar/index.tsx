@@ -51,7 +51,7 @@ const Day: any = styled.div`
   background: #f5f5f5;
   padding: 10px;
 
-  ${(props: any) => props.isWeekend && css`
+  ${(props: any) => props.isWorkFree && css`
     background: #e5e5e5;
   `}
 
@@ -89,8 +89,8 @@ export const Calendar = () => {
   return (
     <>
       <div style={{maxWidth: '1200px', margin: '30px auto'}}>
-        <button onClick={() => previousMonth()}>prev</button>
-        <button onClick={() => nextMonth()}>next</button>
+        <button disabled={state.isLoading} onClick={() => previousMonth()}>prev</button>
+        <button disabled={state.isLoading} onClick={() => nextMonth()}>next</button>
         <button onClick={() => setMonth(date.getFullYear(), date.getMonth() + 1)}>today</button>
         <span>{state.year} {state.month} - {state.monthName}</span>
       </div>
@@ -117,7 +117,7 @@ export const Calendar = () => {
                   <Day
                     isCurrentMonth={day.isCurrentMonth}
                     isCurrentWeek={day.isCurrentWeek}
-                    isWeekend={day.isWeekend}
+                    isWorkFree={day.isWorkFree}
                     isRedDay={day.isRedDay}
                     isToday={day.isToday}
                   >

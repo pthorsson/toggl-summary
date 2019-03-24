@@ -61,11 +61,13 @@ export const getMonth = (year: number, month: number) => {
 
   // Add last visible days of previous month
   for (let i = dataCurrent.paddingLeft; i > 0; i--) {
-    let day = {
+    let day: any = {
       date: [dataPrev.year, dataPrev.month, dataPrev.daysInMonth - i + 1],
       isCurrentMonth: false,
       isToday: false
     };
+
+    day.dateStr = `${day.date[0]}-${('0' + day.date[1]).slice(-2)}-${('0' + day.date[2]).slice(-2)}`;
 
     days.push(day);
   }
@@ -79,39 +81,42 @@ export const getMonth = (year: number, month: number) => {
 
     day.isToday = day.date.join('-') === currentDate.format('YYYY-M-D');
 
+    day.dateStr = `${day.date[0]}-${('0' + day.date[1]).slice(-2)}-${('0' + day.date[2]).slice(-2)}`;
+
     days.push(day);
   }
 
   // Add first visible days of next month
   for (let i = 0; i < dataCurrent.paddingRight; i++) {
-    let day = {
+    let day: any = {
       date: [dataNext.year, dataNext.month, i + 1],
       isCurrentMonth: false,
       isToday: false
     };
+
+    day.dateStr = `${day.date[0]}-${('0' + day.date[1]).slice(-2)}-${('0' + day.date[2]).slice(-2)}`;
 
     days.push(day);
   }
 
 
   // Apply additional data to days
-  (() => {
-    let week: any;
-    let year;
+  // (() => {
+  //   let week: any;
 
-    days.forEach((day: any, i: number) => {
-      let d = i + 1;
-      day.isWeekend = d % 7 === 0 || (d + 1) % 7 === 0;
-      day.isRedDay = d % 7 === 0;
+  //   days.forEach((day: any, i: number) => {
+  //     let d = i + 1;
+  //     day.isWeekend = d % 7 === 0 || (d + 1) % 7 === 0;
+  //     day.isRedDay = d % 7 === 0;
   
-      if (i % 7 === 0) {
-        week = moment([day.date[0], day.date[1] - 1, day.date[2]]);
-      }
+  //     if (i % 7 === 0) {
+  //       week = moment([day.date[0], day.date[1] - 1, day.date[2]]);
+  //     }
   
-      day.week = week.isoWeek();
-      day.isCurrentWeek = week.year() === currentDate.year() && week.isoWeek() === currentDate.isoWeek();
-    });
-  })();
+  //     day.week = week.isoWeek();
+  //     day.isCurrentWeek = week.year() === currentDate.year() && week.isoWeek() === currentDate.isoWeek();
+  //   });
+  // })();
   
 
   return {
