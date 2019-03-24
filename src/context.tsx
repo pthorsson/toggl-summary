@@ -50,7 +50,8 @@ export default class AppProvider extends React.Component<IProps, IState> {
 
   public setMonth(year: number, month: number) {
     const monthData = getMonth(year, month);
-    let weekendData;
+    const startDate = monthData.days[0].dateStr;
+    const endDate = monthData.days[41].dateStr;
 
     this.setState({
       year,
@@ -61,23 +62,25 @@ export default class AppProvider extends React.Component<IProps, IState> {
       isLoading: true
     });
 
-    weekendsApi.loadDays(monthData.days[0].dateStr, monthData.days[41].dateStr)
-      .then(data => {
-        const monthData = getMonth(year, month);
+    Promise.all([
+      weekendsApi.loadDays(startDate, endDate),
+      // togglApi.loadDays(startDate, endDate)
+    ]).then(data => {
+      const monthData = getMonth(year, month);
+      const weekendData = data[0];
 
-        monthData.days.forEach((day, i) => {
-          day.isRedDay = data[i].redDay;
-          day.isWorkFree = data[i].workFree;
-          day.week = data[i].week;
-        });
-
-        this.setState({
-          days: monthData.days,
-          isLoading: false,
-          weekendDataLoading: false,
-        });
+      monthData.days.forEach((day, i) => {
+        day.isRedDay = weekendData[i].redDay;
+        day.isWorkFree = weekendData[i].workFree;
+        day.week = weekendData[i].week;
       });
 
+      this.setState({
+        days: monthData.days,
+        isLoading: false,
+        weekendDataLoading: false,
+      });
+    });
   }
 
   public nextMonth() {
