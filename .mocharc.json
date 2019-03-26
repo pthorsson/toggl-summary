@@ -1,0 +1,10 @@
+{
+  "require": [
+    "ts-node/register",
+    "mocha-clean/brief"
+  ],
+  "watch": true,
+  "recursive": true,
+  "watch-extensions": "ts",
+  "reporter": "min"
+}
