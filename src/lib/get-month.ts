@@ -99,25 +99,23 @@ export const getMonth = (year: number, month: number) => {
     days.push(day);
   }
 
-
   // Apply additional data to days
-  // (() => {
-  //   let week: any;
+  (() => {
+    let week: any;
 
-  //   days.forEach((day: any, i: number) => {
-  //     let d = i + 1;
-  //     day.isWeekend = d % 7 === 0 || (d + 1) % 7 === 0;
-  //     day.isRedDay = d % 7 === 0;
+    days.forEach((day: any, i: number) => {
+      let d = i + 1;
+      day.isWorkFree = d % 7 === 0 || (d + 1) % 7 === 0;
+      day.isRedDay = d % 7 === 0;
   
-  //     if (i % 7 === 0) {
-  //       week = moment([day.date[0], day.date[1] - 1, day.date[2]]);
-  //     }
+      if (i % 7 === 0) {
+        week = moment([day.date[0], day.date[1] - 1, day.date[2]]);
+      }
   
-  //     day.week = week.isoWeek();
-  //     day.isCurrentWeek = week.year() === currentDate.year() && week.isoWeek() === currentDate.isoWeek();
-  //   });
-  // })();
-  
+      day.week = week.isoWeek();
+      day.isCurrentWeek = week.year() === currentDate.year() && week.isoWeek() === currentDate.isoWeek();
+    });
+  })();
 
   return {
     days,

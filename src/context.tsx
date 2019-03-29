@@ -2,6 +2,7 @@ import React from 'react';
 
 import { getMonth } from 'lib/get-month';
 import weekendsApi from 'lib/weekends-api';
+import googleSheetsApi from 'lib/google-sheets-api';
 
 export const AppContext = React.createContext<IContext|null>(null);
 
@@ -15,8 +16,6 @@ export interface IState {
   weekendData: Array<any>;
   togglData: Array<any>;
   isLoading: boolean;
-  weekendDataLoading: boolean;
-  togglDataLoading: boolean;
 }
 
 export interface IContext {
@@ -38,8 +37,6 @@ export default class AppProvider extends React.Component<IProps, IState> {
       weekendData: [],
       togglData: [],
       isLoading: false,
-      weekendDataLoading: false,
-      togglDataLoading: false
     };
   }
 
@@ -57,28 +54,31 @@ export default class AppProvider extends React.Component<IProps, IState> {
       year,
       month,
       monthName: monthData.date.format('MMMM'),
-      days: monthData.days,
-      weekendDataLoading: true,
+      days: monthData.days.slice(),
       isLoading: true
     });
 
     Promise.all([
       weekendsApi.loadDays(startDate, endDate),
+      googleSheetsApi.loadDays(startDate, endDate),
       // togglApi.loadDays(startDate, endDate)
     ]).then(data => {
-      const monthData = getMonth(year, month);
-      const weekendData = data[0];
+      const [wkDays, gsDays] = data;
 
       monthData.days.forEach((day, i) => {
-        day.isRedDay = weekendData[i].redDay;
-        day.isWorkFree = weekendData[i].workFree;
-        day.week = weekendData[i].week;
+        day.isRedDay = wkDays[i].redDay;
+        day.isWorkFree = wkDays[i].workFree;
+
+        let gsDay = gsDays.find((d: any) => d.date === day.dateStr)
+
+        if (gsDay) {
+          day.isVacation = gsDay.type === 'vacation';
+        }
       });
 
       this.setState({
-        days: monthData.days,
-        isLoading: false,
-        weekendDataLoading: false,
+        days: monthData.days.slice(),
+        isLoading: false
       });
     });
   }

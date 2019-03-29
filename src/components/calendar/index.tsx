@@ -11,7 +11,7 @@ const Table: any = styled.table`
   margin: 0;
   border-collapse: collapse;
   table-layout: fixed;
-  width: 100%
+  width: 100%;
   min-width: 800px;
   max-width: 1200px;
   margin: 0 auto;
@@ -68,6 +68,10 @@ const Day: any = styled.div`
     background-color: green;
   `}
 
+  ${(props: any) => props.isVacation && css`
+    background-color: blue;
+  `}
+
   ${(props: any) => !props.isCurrentMonth && css`
     opacity: .3;
   `}
@@ -85,6 +89,8 @@ const weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'satur
 export const Calendar = () => {
   const { state, setMonth, nextMonth, previousMonth } = useContext(AppContext);
   const date = new Date();
+
+  console.log(state.days);
 
   return (
     <>
@@ -120,6 +126,7 @@ export const Calendar = () => {
                     isWorkFree={day.isWorkFree}
                     isRedDay={day.isRedDay}
                     isToday={day.isToday}
+                    isVacation={day.isVacation}
                   >
                     {day.date[2]}
                   </Day>
