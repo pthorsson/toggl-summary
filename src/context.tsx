@@ -67,12 +67,12 @@ export default class AppProvider extends React.Component<IProps, IState> {
       googleSheetsApi.loadDays(startDate, endDate),
       togglApi.loadDays(startDate, endDate)
     ]).then(data => {
-      const [weekendData, googleData, toggleData] = data;
+      const [weekendData, googleData, togglData] = data;
 
       summarizeData(monthData, {
         weekendData,
         googleData,
-        toggleData
+        togglData
       });
 
       this.setState({

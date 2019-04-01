@@ -26,7 +26,7 @@ export const roundWith = (value: number, point: number) =>
 /**
  * Summerizes all data given from the APIs.
  */
-export const summarizeData = (month: any, { toggleData, weekendData, googleData }: any) => {
+export const summarizeData = (month: any, { togglData, weekendData, googleData }: any) => {
   month.days.forEach((day: any, i: number) => {
     day.isRedDay = weekendData[i].redDay;
     day.isWorkFree = weekendData[i].workFree;
@@ -38,7 +38,7 @@ export const summarizeData = (month: any, { toggleData, weekendData, googleData 
       day.isVacation = gsDay.type === 'vacation';
     }
 
-    let tgDay = toggleData.find((d: any) => d.date === day.dateStr);
+    let tgDay = togglData.find((d: any) => d.date === day.dateStr);
 
     if (tgDay) {
       const { billable, sick, regular, projects } = tgDay;
