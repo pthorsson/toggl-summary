@@ -1,8 +1,12 @@
 import React from 'react';
 
 import { getMonth } from 'lib/get-month';
+
 import weekendsApi from 'lib/weekends-api';
 import googleSheetsApi from 'lib/google-sheets-api';
+import togglApi from 'lib/toggl-api';
+
+import { summarizeData } from 'lib/utils';
 
 export const AppContext = React.createContext<IContext|null>(null);
 
@@ -61,19 +65,14 @@ export default class AppProvider extends React.Component<IProps, IState> {
     Promise.all([
       weekendsApi.loadDays(startDate, endDate),
       googleSheetsApi.loadDays(startDate, endDate),
-      // togglApi.loadDays(startDate, endDate)
+      togglApi.loadDays(startDate, endDate)
     ]).then(data => {
-      const [wkDays, gsDays] = data;
+      const [weekendData, googleData, toggleData] = data;
 
-      monthData.days.forEach((day, i) => {
-        day.isRedDay = wkDays[i].redDay;
-        day.isWorkFree = wkDays[i].workFree;
-
-        let gsDay = gsDays.find((d: any) => d.date === day.dateStr)
-
-        if (gsDay) {
-          day.isVacation = gsDay.type === 'vacation';
-        }
+      summarizeData(monthData, {
+        weekendData,
+        googleData,
+        toggleData
       });
 
       this.setState({
