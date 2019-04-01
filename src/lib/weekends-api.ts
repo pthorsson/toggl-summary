@@ -1,4 +1,3 @@
-import uniq from 'lodash/uniq';
 import range from 'lodash/range';
 
 const BASE_URL = 'https://api.dryg.net/dagar/v2.1/';
@@ -7,9 +6,7 @@ interface IDay {
   date: string;
   workFree: boolean;
   redDay: boolean;
-  week: number;
   occasion: string;
-  dayOfWeek: number;
   flagDay: string;
   namesOfTheDay: Array<string>;
 }
@@ -38,9 +35,7 @@ class WeekendsApi {
         date: day['datum'],
         workFree: day['arbetsfri dag'] === 'Ja',
         redDay: day['röd dag'] === 'Ja',
-        week: parseInt(day['vecka']),
         occasion: day['helgdag'] || null,
-        dayOfWeek: parseInt(day['dag i vecka']),
         flagDay: day['flaggdag'].length ? day['flaggdag'] : null,
         namesOfTheDay: day['namnsdag']
       }));
