@@ -57,12 +57,14 @@ class TogglApi {
 
       project = project || {
         label: entry.project,
-        sick: 0,
-        billable: 0,
-        regular: 0,
+        hours: {
+          sick: 0,
+          billable: 0,
+          regular: 0,
+        }
       };
 
-      project[type] += entry.dur / 1000 / 60 / 60;
+      project.hours[type] += entry.dur / 1000 / 60 / 60;
 
       if (!hasProject) {
         days[date].projects.push(project);
@@ -79,14 +81,14 @@ class TogglApi {
       };
 
       day.projects.forEach((p: any) => {
-        p.sick = hours.sick += roundWith(p.sick, .25);
-        p.billable = hours.billable += roundWith(p.billable, .25);
-        p.regular = hours.regular += roundWith(p.regular, .25);
+        hours.sick += p.hours.sick = roundWith(p.hours.sick, .25);
+        hours.billable += p.hours.billable = roundWith(p.hours.billable, .25);
+        hours.regular += p.hours.regular = roundWith(p.hours.regular, .25);
       });
 
       return {
         date,
-        ...hours,
+        hours,
         projects: day.projects
       }
     });
@@ -123,7 +125,7 @@ class TogglApi {
       let res = await fetch(buildUrl(baseUrl, { ...params, page }), settings);
       let { data, total_count, per_page } = await res.json();
 
-      await this.delay(500);
+      // await this.delay(500);
 
       entries.push(...data);
 

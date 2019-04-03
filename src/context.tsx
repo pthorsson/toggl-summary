@@ -6,7 +6,7 @@ import weekendsApi from 'lib/weekends-api';
 import googleSheetsApi from 'lib/google-sheets-api';
 import togglApi from 'lib/toggl-api';
 
-import { summarizeData } from 'lib/utils';
+import { applyData, summerizeHours } from 'lib/utils';
 
 export const AppContext = React.createContext<IContext|null>(null);
 
@@ -17,8 +17,8 @@ export interface IState {
   month: number;
   monthName: string;
   days: Array<any>;
-  weekendData: Array<any>;
-  togglData: Array<any>;
+  weekHours: any;
+  monthHours: any;
   isLoading: boolean;
 }
 
@@ -38,8 +38,8 @@ export default class AppProvider extends React.Component<IProps, IState> {
       month: null,
       monthName: null,
       days: [],
-      weekendData: [],
-      togglData: [],
+      weekHours: {},
+      monthHours: {},
       isLoading: false,
     };
   }
@@ -51,8 +51,6 @@ export default class AppProvider extends React.Component<IProps, IState> {
 
   public setMonth(year: number, month: number) {
     const monthData = getMonth(year, month);
-    const startDate = monthData.days[0].dateStr;
-    const endDate = monthData.days[41].dateStr;
 
     this.setState({
       year,
@@ -63,20 +61,27 @@ export default class AppProvider extends React.Component<IProps, IState> {
     });
 
     Promise.all([
-      weekendsApi.loadDays(startDate, endDate),
-      googleSheetsApi.loadDays(startDate, endDate),
-      togglApi.loadDays(startDate, endDate)
+      weekendsApi.loadDays(monthData.monthSpanPadded[0], monthData.monthSpanPadded[1]),
+      googleSheetsApi.loadDays(monthData.monthSpanPadded[0], monthData.monthSpanPadded[1]),
+      togglApi.loadDays(monthData.monthSpan[0], monthData.monthSpan[1])
     ]).then(data => {
       const [weekendData, googleData, togglData] = data;
 
-      summarizeData(monthData, {
+      applyData(monthData, {
         weekendData,
         googleData,
         togglData
       });
 
+      let {
+        weekHours,
+        monthHours
+      } = summerizeHours(monthData.days, monthData.monthSpan[0], monthData.monthSpan[1]);
+
       this.setState({
         days: monthData.days.slice(),
+        weekHours,
+        monthHours,
         isLoading: false
       });
     });

@@ -128,7 +128,7 @@ export const Calendar = () => {
                     isToday={day.isToday}
                     isVacation={day.isVacation}
                   >
-                    {day.date[2]}
+                    {day.dateArr[2]}
                   </Day>
                 </Cell>
               ))}

@@ -24,31 +24,73 @@ export const roundWith = (value: number, point: number) =>
 
 
 /**
- * Summerizes all data given from the APIs.
+ * Applies data given from the APIs to month days.
  */
-export const summarizeData = (month: any, { togglData, weekendData, googleData }: any) => {
+export const applyData = (month: any, { togglData, weekendData, googleData }: any) => {
   month.days.forEach((day: any, i: number) => {
-    day.isRedDay = weekendData[i].redDay;
-    day.isWorkFree = weekendData[i].workFree;
-    day.timeReport = null;
-
-    let gsDay = googleData.find((d: any) => d.date === day.dateStr)
-
-    if (gsDay) {
-      day.isVacation = gsDay.type === 'vacation';
+    if (weekendData) {
+      day.isRedDay = weekendData[i].redDay;
+      day.isWorkFree = weekendData[i].workFree;
     }
 
-    let tgDay = togglData.find((d: any) => d.date === day.dateStr);
+    if (googleData) {
+      let gsDay = googleData.find((d: any) => d.date === day.date)
 
-    if (tgDay) {
-      const { billable, sick, regular, projects } = tgDay;
+      if (gsDay) {
+        day.isVacation = gsDay.type === 'vacation';
+      }
+    }
 
-      day.timeReport = {
-        billable,
-        sick,
-        regular,
-        projects,
-      };
+    if (togglData) {
+      day.timeReport = null;
+
+      let tgDay = togglData.find((d: any) => d.date === day.date);
+
+      if (tgDay) {
+        const { hours, projects } = tgDay;
+  
+        day.timeReport = {
+          hours,
+          projects,
+        };
+      }
     }
   });
+};
+
+export const summerizeHours = (days: any, startDate: string, endDate: string) => {
+  let template = {
+    sick: 0,
+    billable: 0,
+    regular: 0,
+    available: 0
+  };
+
+  let weekHours: any = {};
+  let monthHours = { ...template };
+
+  days.forEach((day: any) => {
+    if (day.date < startDate || day.date > endDate) return;
+
+    weekHours[day.week] = weekHours[day.week] || { ...template };
+
+    if (!day.isWorkFree) {
+      weekHours[day.week].available += 8;
+    }
+
+    if (day.timeReport) {
+      weekHours[day.week].sick += day.timeReport.hours.sick;
+      weekHours[day.week].billable += day.timeReport.hours.billable;
+      weekHours[day.week].regular += day.timeReport.hours.regular;
+    }
+  });
+
+  Object.keys(weekHours).forEach(week => {
+    monthHours.available += weekHours[week].available;
+    monthHours.sick += weekHours[week].sick;
+    monthHours.billable += weekHours[week].billable;
+    monthHours.regular += weekHours[week].regular;
+  });
+
+  return { weekHours, monthHours };
 };

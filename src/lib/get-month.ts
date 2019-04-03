@@ -8,6 +8,8 @@ export const getMonth = (year: number, month: number) => {
 
   // All days to display will be pushed into this array
   const days = [];
+  const monthSpan = [];
+  const monthSpanPadded = [];
 
   const dates = {
     current: {
@@ -62,12 +64,12 @@ export const getMonth = (year: number, month: number) => {
   // Add last visible days of previous month
   for (let i = dataCurrent.paddingLeft; i > 0; i--) {
     let day: any = {
-      date: [dataPrev.year, dataPrev.month, dataPrev.daysInMonth - i + 1],
+      dateArr: [dataPrev.year, dataPrev.month, dataPrev.daysInMonth - i + 1],
       isCurrentMonth: false,
       isToday: false
     };
 
-    day.dateStr = `${day.date[0]}-${('0' + day.date[1]).slice(-2)}-${('0' + day.date[2]).slice(-2)}`;
+    day.date = `${day.dateArr[0]}-${('0' + day.dateArr[1]).slice(-2)}-${('0' + day.dateArr[2]).slice(-2)}`;
 
     days.push(day);
   }
@@ -75,29 +77,35 @@ export const getMonth = (year: number, month: number) => {
   // Add all days of current month
   for (let i = 0; i < dataCurrent.daysInMonth; i++) {
     let day: any = {
-      date: [dataCurrent.year, dataCurrent.month, i + 1],
+      dateArr: [dataCurrent.year, dataCurrent.month, i + 1],
       isCurrentMonth: true
     };
 
-    day.isToday = day.date.join('-') === currentDate.format('YYYY-M-D');
+    day.isToday = day.dateArr.join('-') === currentDate.format('YYYY-M-D');
 
-    day.dateStr = `${day.date[0]}-${('0' + day.date[1]).slice(-2)}-${('0' + day.date[2]).slice(-2)}`;
+    day.date = `${day.dateArr[0]}-${('0' + day.dateArr[1]).slice(-2)}-${('0' + day.dateArr[2]).slice(-2)}`;
 
     days.push(day);
+
+    if (i === 0) monthSpan[0] = day.date;
+    if (i === dataCurrent.daysInMonth - 1) monthSpan[1] = day.date;
   }
 
   // Add first visible days of next month
   for (let i = 0; i < dataCurrent.paddingRight; i++) {
     let day: any = {
-      date: [dataNext.year, dataNext.month, i + 1],
+      dateArr: [dataNext.year, dataNext.month, i + 1],
       isCurrentMonth: false,
       isToday: false
     };
 
-    day.dateStr = `${day.date[0]}-${('0' + day.date[1]).slice(-2)}-${('0' + day.date[2]).slice(-2)}`;
+    day.date = `${day.dateArr[0]}-${('0' + day.dateArr[1]).slice(-2)}-${('0' + day.dateArr[2]).slice(-2)}`;
 
     days.push(day);
   }
+
+  monthSpanPadded[0] = days[0].date;
+  monthSpanPadded[1] = days[41].date;
 
   // Apply additional data to days
   (() => {
@@ -109,7 +117,7 @@ export const getMonth = (year: number, month: number) => {
       day.isRedDay = d % 7 === 0;
   
       if (i % 7 === 0) {
-        week = moment([day.date[0], day.date[1] - 1, day.date[2]]);
+        week = moment([day.dateArr[0], day.dateArr[1] - 1, day.dateArr[2]]);
       }
   
       day.week = week.isoWeek();
@@ -119,6 +127,8 @@ export const getMonth = (year: number, month: number) => {
 
   return {
     days,
+    monthSpan,
+    monthSpanPadded,
     date: currentMonth
   };
 };
