@@ -31,6 +31,7 @@ export const applyData = (month: any, { togglData, weekendData, googleData }: an
     if (weekendData) {
       day.isRedDay = weekendData[i].redDay;
       day.isWorkFree = weekendData[i].workFree;
+      day.occasion = weekendData[i].occasion;
     }
 
     if (googleData) {

@@ -24,9 +24,11 @@ export interface IState {
 
 export interface IContext {
   state: IState;
-  setMonth: (year: number, month: number) => void;
-  nextMonth: () => void;
-  previousMonth: () => void;
+  actions: {
+    setMonth: (year: number, month: number) => void;
+    nextMonth: () => void;
+    previousMonth: () => void;
+  }
 }
 
 export default class AppProvider extends React.Component<IProps, IState> {
@@ -56,7 +58,6 @@ export default class AppProvider extends React.Component<IProps, IState> {
       year,
       month,
       monthName: monthData.date.format('MMMM'),
-      days: monthData.days.slice(),
       isLoading: true
     });
 
@@ -102,9 +103,11 @@ export default class AppProvider extends React.Component<IProps, IState> {
   render() {
     const context: IContext = {
       state: this.state,
-      setMonth: this.setMonth.bind(this),
-      nextMonth: this.nextMonth.bind(this),
-      previousMonth: this.previousMonth.bind(this)
+      actions: {
+        setMonth: this.setMonth.bind(this),
+        nextMonth: this.nextMonth.bind(this),
+        previousMonth: this.previousMonth.bind(this)
+      }
     };
 
     return (
