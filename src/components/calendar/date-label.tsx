@@ -13,9 +13,9 @@ const DayNumber: any = styled.div`
 const Occasion: any = styled.div`
   font-size: 10px;
   line-height: 9px;
-  padding-left: 8px;
-  margin-left: 8px;
-  border-left: 1px solid rgba(0, 0, 0, .1);
+  margin-left: 5px;
+  flex: 1 1 auto;
+  text-align: right;
 `;
 
 export const DateLabel = ({ dayNumber, occasion, isRedDay }: any) => (

@@ -5,6 +5,7 @@ import chunk from 'lodash/chunk';
 import { AppContext } from 'context';
 
 import { DateLabel } from './date-label';
+import { DailyHours } from './daily-hours';
 
 const Table: any = styled.table`
   padding: 0;
@@ -75,25 +76,61 @@ const Day: any = styled.div`
   color: #999999;
   padding: 10px;
   height: 100px;
+  position: relative;
+
+  ${(props: any) => props.isCurrentWeek && css`
+    &::after, &::before {
+      content: '';
+      position: absolute;
+      width: calc(100% + 2px);
+      left: -2px;
+      border-top: 3px solid #6aa2ed;
+    }
+
+    &::before {
+      bottom: 0;
+    }
+
+    &::after {
+      top: 0;
+    }
+  `}
 
   ${(props: any) => props.isWorkFree && css`
-    background: #e5e5e5;
     color: #777777;
+    background: repeating-linear-gradient(
+      -54.2deg,
+      #e5e5e5,
+      #e5e5e5 10px,
+      #e9e9e9 10px,
+      #e9e9e9 20px
+    );
   `}
 
   ${(props: any) => props.isToday && css`
-    border: 3px solid #6aa2ed;
-    padding: 8px;
+    font-weight: bold;
   `}
 
   ${(props: any) => props.isVacation && css`
-    background-color: #dfedff;
-    color: #6869bf;
+    color: #7475cc;
+    background: repeating-linear-gradient(
+      -54.2deg,
+      #dfedff,
+      #dfedff 10px,
+      #d6e7ff 10px,
+      #d6e7ff 20px
+    );
   `}
 
   ${(props: any) => props.isRedDay && css`
-    background: #ffc9c7;
     color: #c94141;
+    background: repeating-linear-gradient(
+      -54.2deg,
+      #ffe2e2,
+      #ffe2e2 10px,
+      #ffdbdb 10px,
+      #ffdbdb 20px
+    );
   `}
 
   ${(props: any) => !props.isCurrentMonth && css`
@@ -117,7 +154,7 @@ export const Calendar = () => {
       <div style={{maxWidth: '1200px', margin: '30px auto'}}>
         <button disabled={state.isLoading} onClick={() => actions.previousMonth()}>prev</button>
         <button disabled={state.isLoading} onClick={() => actions.nextMonth()}>next</button>
-        <button onClick={() => actions.setMonth(date.getFullYear(), date.getMonth() + 1)}>today</button>
+        <button disabled={state.isLoading} onClick={() => actions.setMonth(date.getFullYear(), date.getMonth() + 1)}>today</button>
         <span>{state.year} {state.month} ({state.monthName})</span>
       </div>
 
@@ -148,6 +185,7 @@ export const Calendar = () => {
                 <Cell key={i}>
                   <Day
                     isCurrentMonth={day.isCurrentMonth}
+                    isCurrentWeek={day.isCurrentWeek}
                     isWorkFree={day.isWorkFree}
                     isRedDay={day.isRedDay}
                     isToday={day.isToday}
@@ -157,6 +195,10 @@ export const Calendar = () => {
                       dayNumber={day.dateArr[2]}
                       occasion={day.occasion}
                     />
+                    {
+                      day.timeReport &&
+                      <DailyHours timeReport={day.timeReport} />
+                    }
                   </Day>
                 </Cell>
               ))}
