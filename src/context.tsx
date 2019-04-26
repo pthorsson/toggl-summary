@@ -17,8 +17,19 @@ export interface IState {
   month: number;
   monthName: string;
   days: Array<any>;
-  weekHours: any;
-  monthHours: any;
+  weekHours: {
+    billable?: number;
+    regular?: number;
+    sick?: number;
+    available?: number;
+  };
+  monthHours: {
+    billable?: number;
+    regular?: number;
+    sick?: number;
+    available?: number;
+    past?: number;
+  };
   isLoading: boolean;
 }
 
