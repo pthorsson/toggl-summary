@@ -17,6 +17,7 @@ export interface IState {
   month: number;
   monthName: string;
   days: Array<any>;
+  selectedWeek: Array<number>;
   weekHours: {
     billable?: number;
     regular?: number;
@@ -39,6 +40,7 @@ export interface IContext {
     setMonth: (year: number, month: number) => void;
     nextMonth: () => void;
     previousMonth: () => void;
+    selectWeek: (year: number, week: number) => void;
   }
 }
 
@@ -54,6 +56,7 @@ export default class AppProvider extends React.Component<IProps, IState> {
       weekHours: {},
       monthHours: {},
       isLoading: false,
+      selectedWeek: [0, 0]
     };
   }
 
@@ -111,13 +114,18 @@ export default class AppProvider extends React.Component<IProps, IState> {
     this.setMonth(year, month);
   }
 
+  public selectWeek(year: number, week: number) {
+    this.setState({ selectedWeek: [ year, week ]});
+  }
+
   render() {
     const context: IContext = {
       state: this.state,
       actions: {
         setMonth: this.setMonth.bind(this),
         nextMonth: this.nextMonth.bind(this),
-        previousMonth: this.previousMonth.bind(this)
+        previousMonth: this.previousMonth.bind(this),
+        selectWeek: this.selectWeek.bind(this)
       }
     };
 

@@ -42,6 +42,29 @@ const Row: any = styled.tr`
       top: 0;
     }
   }
+
+  ${(props: any) => props.selected && css`
+    td:first-child > div {
+      background: #6aa2ed !important;
+    }
+
+    td:first-child ~ td > div::after,
+    td:first-child ~ td > div::before {
+      content: '';
+      position: absolute;
+      width: calc(100% + 2px);
+      left: -2px;
+      border-top: 3px solid #6aa2ed !important;
+    }
+
+    td:first-child ~ td > div::before {
+      bottom: 0;
+    }
+
+    td:first-child ~ td > div::after {
+      top: 0;
+    }
+  `}
 `;
 
 const TableHead: any = styled.thead`
@@ -87,7 +110,7 @@ const WeekNumber: any = styled.div`
   text-align: center;
 
   ${(props: any) => props.isCurrentWeek && css`
-    background: #6aa2ed !important;
+    background: #ff9c60;
   `}
 `; 
 
@@ -97,24 +120,6 @@ const Day: any = styled.div`
   padding: 10px;
   height: 100px;
   position: relative;
-
-  ${(props: any) => props.isCurrentWeek && css`
-    ::after, ::before {
-      content: '';
-      position: absolute;
-      width: calc(100% + 2px);
-      left: -2px;
-      border-top: 3px solid #6aa2ed !important;
-    }
-
-    ::before {
-      bottom: 0;
-    }
-
-    ::after {
-      top: 0;
-    }
-  `}
 
   ${(props: any) => props.isWorkFree && css`
     color: #777777;
@@ -161,7 +166,7 @@ const Day: any = styled.div`
 const weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 export const Calendar = () => {
-  const { state } = useContext(AppContext);
+  const { state, actions } = useContext(AppContext);
 
   console.log('---------------------------------');
   console.log('days', state.days);
@@ -184,7 +189,12 @@ export const Calendar = () => {
       </TableHead>
       <TableBody>
         {chunk(state.days, 7).map((days: any, i: number) => (
-          <Row key={days[0].week} week={days[0].week}>
+          <Row
+            key={days[0].week}
+            week={days[0].week}
+            selected={days[0].dateArr[0] === state.selectedWeek[0] && days[0].week === state.selectedWeek[1]}
+            onClick={() => actions.selectWeek(days[0].dateArr[0], days[0].week)}
+          >
             <Cell isWeek={true}>
               <WeekNumber
                 isCurrentWeek={days[0].isCurrentWeek}

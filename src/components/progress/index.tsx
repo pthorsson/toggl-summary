@@ -12,6 +12,7 @@ const Value: any = styled.div`
   position: relative;
   font-size: 36px;
   padding: 10px 20px 30px 20px;
+  color: #454545;
 
   ::after {
     opacity: .4;
