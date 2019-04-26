@@ -18,6 +18,15 @@ const Table: any = styled.table`
 const Row: any = styled.tr`
   padding: 0;
 
+  td:first-child ~ td > div::after,
+  td:first-child ~ td > div::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
   :hover {
     cursor: pointer;
 
@@ -25,21 +34,19 @@ const Row: any = styled.tr`
       background: #bcbcbc;
     }
 
-    td:first-child ~ td > div::after,
     td:first-child ~ td > div::before {
-      content: '';
-      position: absolute;
+      top: 0;
+      border-top: 3px solid #bcbcbc;
+      border-bottom: 3px solid #bcbcbc;
       width: calc(100% + 2px);
       left: -2px;
-      border-top: 3px solid #bcbcbc;
     }
 
-    td:first-child ~ td > div::before {
-      bottom: 0;
-    }
-
-    td:first-child ~ td > div::after {
+    td:last-child > div::after {
       top: 0;
+      right: 0;
+      width: 100%;
+      border-right: 3px solid #bcbcbc;
     }
   }
 
@@ -48,21 +55,19 @@ const Row: any = styled.tr`
       background: #6aa2ed !important;
     }
 
-    td:first-child ~ td > div::after,
     td:first-child ~ td > div::before {
-      content: '';
-      position: absolute;
+      top: 0;
+      border-top: 3px solid #6aa2ed !important;;
+      border-bottom: 3px solid #6aa2ed !important;;
       width: calc(100% + 2px);
       left: -2px;
-      border-top: 3px solid #6aa2ed !important;
     }
 
-    td:first-child ~ td > div::before {
-      bottom: 0;
-    }
-
-    td:first-child ~ td > div::after {
+    td:last-child > div::after {
       top: 0;
+      right: 0;
+      width: 100%;
+      border-right: 3px solid #6aa2ed !important;;
     }
   `}
 `;
@@ -112,14 +117,18 @@ const WeekNumber: any = styled.div`
   ${(props: any) => props.isCurrentWeek && css`
     background: #ff9c60;
   `}
-`; 
+`;
 
 const Day: any = styled.div`
+  position: relative;
+`;
+
+
+const DayContent: any = styled.div`
   background: #f5f5f5;
   color: #999999;
   padding: 10px;
   height: 100px;
-  position: relative;
 
   ${(props: any) => props.isWorkFree && css`
     color: #777777;
@@ -204,21 +213,23 @@ export const Calendar = () => {
             </Cell>
             {days.map((day: any, i: number) => (
               <Cell key={day.date}>
-                <Day
-                  isCurrentMonth={day.isCurrentMonth}
-                  isCurrentWeek={day.isCurrentWeek}
-                  isWorkFree={day.isWorkFree}
-                  isRedDay={day.isRedDay}
-                  isToday={day.isToday}
-                  isVacation={day.isVacation}
-                >
-                  <DateLabel
-                    dayNumber={day.dateArr[2]}
-                    occasion={day.timeReport.hours.available === 4 ? '(Halvdag)' : day.occasion}
-                  />
-                  { day.isCurrentMonth && 
-                    <DailyHours timeReport={day.timeReport} availableHours={day.availableHours} />
-                  }
+                <Day>
+                  <DayContent
+                    isCurrentMonth={day.isCurrentMonth}
+                    isCurrentWeek={day.isCurrentWeek}
+                    isWorkFree={day.isWorkFree}
+                    isRedDay={day.isRedDay}
+                    isToday={day.isToday}
+                    isVacation={day.isVacation}
+                  >
+                    <DateLabel
+                      dayNumber={day.dateArr[2]}
+                      occasion={day.timeReport.hours.available === 4 ? '(Halvdag)' : day.occasion}
+                    />
+                    { day.isCurrentMonth && 
+                      <DailyHours timeReport={day.timeReport} availableHours={day.availableHours} />
+                    }
+                  </DayContent>
                 </Day>
               </Cell>
             ))}
