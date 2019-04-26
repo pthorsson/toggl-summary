@@ -17,6 +17,31 @@ const Table: any = styled.table`
 
 const Row: any = styled.tr`
   padding: 0;
+
+  :hover {
+    cursor: pointer;
+
+    td:first-child > div {
+      background: #bcbcbc;
+    }
+
+    td:first-child ~ td > div::after,
+    td:first-child ~ td > div::before {
+      content: '';
+      position: absolute;
+      width: calc(100% + 2px);
+      left: -2px;
+      border-top: 3px solid #bcbcbc;
+    }
+
+    td:first-child ~ td > div::before {
+      bottom: 0;
+    }
+
+    td:first-child ~ td > div::after {
+      top: 0;
+    }
+  }
 `;
 
 const TableHead: any = styled.thead`
@@ -62,7 +87,7 @@ const WeekNumber: any = styled.div`
   text-align: center;
 
   ${(props: any) => props.isCurrentWeek && css`
-    background: #6aa2ed;
+    background: #6aa2ed !important;
   `}
 `; 
 
@@ -74,19 +99,19 @@ const Day: any = styled.div`
   position: relative;
 
   ${(props: any) => props.isCurrentWeek && css`
-    &::after, &::before {
+    ::after, ::before {
       content: '';
       position: absolute;
       width: calc(100% + 2px);
       left: -2px;
-      border-top: 3px solid #6aa2ed;
+      border-top: 3px solid #6aa2ed !important;
     }
 
-    &::before {
+    ::before {
       bottom: 0;
     }
 
-    &::after {
+    ::after {
       top: 0;
     }
   `}
@@ -151,7 +176,7 @@ export const Calendar = () => {
             <WeekDay>v.</WeekDay>
           </HeadCell>
           {weekDays.map((weekDay: any, i: number) => (
-            <HeadCell key={i}>
+            <HeadCell key={weekDay}>
               <WeekDay>{weekDay}</WeekDay>
             </HeadCell>
           ))}
@@ -159,7 +184,7 @@ export const Calendar = () => {
       </TableHead>
       <TableBody>
         {chunk(state.days, 7).map((days: any, i: number) => (
-          <Row key={i} week={days[0].week}>
+          <Row key={days[0].week} week={days[0].week}>
             <Cell isWeek={true}>
               <WeekNumber
                 isCurrentWeek={days[0].isCurrentWeek}
@@ -168,7 +193,7 @@ export const Calendar = () => {
               </WeekNumber>
             </Cell>
             {days.map((day: any, i: number) => (
-              <Cell key={i}>
+              <Cell key={day.date}>
                 <Day
                   isCurrentMonth={day.isCurrentMonth}
                   isCurrentWeek={day.isCurrentWeek}
