@@ -4,13 +4,20 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { Normalize } from 'styled-normalize';
 
 import togglApi from 'lib/toggl-api';
-import weekendsApi from 'lib/weekends-api';
 import googleSheetsApi from 'lib/google-sheets-api';
 
-import { buildUrl } from 'lib/utils';
+let vars: any = {};
+
+try {
+  vars = require('../vars');
+} catch (error) {
+  console.log('Could not load vars');
+}
 
 import AppProvider from 'context';
 
+import { Progress } from 'components/progress';
+import { Controls } from 'components/controls';
 import { Calendar } from 'components/calendar';
 
 const GlobalStyle = createGlobalStyle`
@@ -25,11 +32,41 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const Container = styled.div`
+  min-width: 800px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px;
+`;
+
+const Grid = styled.div`
+  display: flex;
+`;
+
+const Cell = styled.div`
+  flex: 1;
+`;
+
+togglApi.email = vars.TOGGL_EMAIL;
+togglApi.token = vars.TOGGL_TOKEN;
+togglApi.workspace = vars.TOGGL_WORKSPACE;
+googleSheetsApi.sheetId = vars.GOOGLE_SHEET;
+
 ReactDOM.render(
   <AppProvider>
     <Normalize />
     <GlobalStyle />
-    <Calendar />
+    <Container>
+      <Grid>
+        <Cell>
+          <Controls />
+        </Cell>
+        <Cell>
+          <Progress />
+        </Cell>
+      </Grid>
+      <Calendar />
+    </Container>
   </AppProvider>,
   document.getElementById('app-root')
 );

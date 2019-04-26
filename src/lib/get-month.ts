@@ -115,6 +115,7 @@ export const getMonth = (year: number, month: number) => {
       let d = i + 1;
       day.isWorkFree = d % 7 === 0 || (d + 1) % 7 === 0;
       day.isRedDay = d % 7 === 0;
+      day.dayOfWeek = (i % 7) + 1;
   
       if (i % 7 === 0) {
         week = moment([day.dateArr[0], day.dateArr[1] - 1, day.dateArr[2]]);

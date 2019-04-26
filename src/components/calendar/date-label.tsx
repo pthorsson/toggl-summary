@@ -18,8 +18,8 @@ const Occasion: any = styled.div`
   text-align: right;
 `;
 
-export const DateLabel = ({ dayNumber, occasion, isRedDay }: any) => (
-  <Wrapper isRedDay={isRedDay}>
+export const DateLabel = ({ dayNumber, occasion }: any) => (
+  <Wrapper>
     <DayNumber>{dayNumber}</DayNumber>
     {occasion && <Occasion>{occasion}</Occasion>}
   </Wrapper>

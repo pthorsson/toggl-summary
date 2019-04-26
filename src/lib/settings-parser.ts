@@ -21,9 +21,9 @@ const availableKeys: any = {
 /**
  * Takes a string and converts it to a settings object.
  * 
- * Format: <short-key>:<value> [..., <short-key>:<value>]
+ * Format: <short-key><value> [..., <short-key><value>]
  * 
- * Example: tt:123456789,tw:987654321
+ * Example: tt123456789,tw987654321
  * 
  * Available short keys:
  *  - tt = togglToken
@@ -40,7 +40,8 @@ export const parseSettings = (settingsStr: string): ISettings => {
   settingsStr
     .split(',')
     .forEach(part => {
-      const [key, val] = part.split(':');
+      const key = part.substr(0, 2);
+      const val = part.substr(2);
 
       if (availableKeys[key])  {
         settings[availableKeys[key]] = val;
@@ -51,4 +52,29 @@ export const parseSettings = (settingsStr: string): ISettings => {
     ...settingsModel,
     ...settings
   };
+};
+
+/**
+ * Converts settings object to string.
+ * 
+ * @param {ISettings} settings Settings object.
+ * 
+ * @return {string} Stringified settings object.
+ */
+export const stringifySettings = (settings: any): string => {
+  let settingsStrs: Array<string> = [];
+
+  Object
+    .keys(settings)
+    .forEach((key: string) => {
+      Object
+        .keys(availableKeys)
+        .forEach((shortKey: string) => {
+          if (availableKeys[shortKey] === key) {
+            settingsStrs.push(`${shortKey}${settings[key]}`);
+          }
+        });
+    });
+
+  return settingsStrs.join(',');
 };

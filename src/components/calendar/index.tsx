@@ -13,9 +13,6 @@ const Table: any = styled.table`
   border-collapse: collapse;
   table-layout: fixed;
   width: 100%;
-  min-width: 800px;
-  max-width: 1200px;
-  margin: 0 auto;
 `;
 
 const Row: any = styled.tr`
@@ -27,8 +24,7 @@ const TableHead: any = styled.thead`
 `;
 
 const HeadCell: any = styled.th`
-  border-top: 2px solid white;
-  border-left: 2px solid white;
+  border: 2px solid white;
   padding: 0;
   margin: 0;
   text-transform: uppercase;
@@ -47,8 +43,7 @@ const TableBody: any = styled.tbody`
 `;
 
 const Cell: any = styled.td`
-  border-top: 2px solid white;
-  border-left: 2px solid white;
+  border: 2px solid white;
   padding: 0;
   margin: 0;
 `;
@@ -141,8 +136,7 @@ const Day: any = styled.div`
 const weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 export const Calendar = () => {
-  const { state, actions } = useContext(AppContext);
-  const date = new Date();
+  const { state } = useContext(AppContext);
 
   console.log('---------------------------------');
   console.log('days', state.days);
@@ -150,62 +144,52 @@ export const Calendar = () => {
   console.log('monthHours', state.monthHours);
 
   return (
-    <>
-      <div style={{maxWidth: '1200px', margin: '30px auto'}}>
-        <button disabled={state.isLoading} onClick={() => actions.previousMonth()}>prev</button>
-        <button disabled={state.isLoading} onClick={() => actions.nextMonth()}>next</button>
-        <button disabled={state.isLoading} onClick={() => actions.setMonth(date.getFullYear(), date.getMonth() + 1)}>today</button>
-        <span>{state.year} {state.month} ({state.monthName})</span>
-      </div>
-
-      <Table>
-        <TableHead>
-          <Row>
-            <HeadCell isWeek={true}>
-              <WeekDay>v.</WeekDay>
+    <Table>
+      <TableHead>
+        <Row>
+          <HeadCell isWeek={true}>
+            <WeekDay>v.</WeekDay>
+          </HeadCell>
+          {weekDays.map((weekDay: any, i: number) => (
+            <HeadCell key={i}>
+              <WeekDay>{weekDay}</WeekDay>
             </HeadCell>
-            {weekDays.map((weekDay: any, i: number) => (
-              <HeadCell key={i}>
-                <WeekDay>{weekDay}</WeekDay>
-              </HeadCell>
+          ))}
+        </Row>
+      </TableHead>
+      <TableBody>
+        {chunk(state.days, 7).map((days: any, i: number) => (
+          <Row key={i} week={days[0].week}>
+            <Cell isWeek={true}>
+              <WeekNumber
+                isCurrentWeek={days[0].isCurrentWeek}
+              >
+                {days[0].week}
+              </WeekNumber>
+            </Cell>
+            {days.map((day: any, i: number) => (
+              <Cell key={i}>
+                <Day
+                  isCurrentMonth={day.isCurrentMonth}
+                  isCurrentWeek={day.isCurrentWeek}
+                  isWorkFree={day.isWorkFree}
+                  isRedDay={day.isRedDay}
+                  isToday={day.isToday}
+                  isVacation={day.isVacation}
+                >
+                  <DateLabel
+                    dayNumber={day.dateArr[2]}
+                    occasion={day.timeReport.hours.available === 4 ? '(Halvdag)' : day.occasion}
+                  />
+                  { day.isCurrentMonth && 
+                    <DailyHours timeReport={day.timeReport} availableHours={day.availableHours} />
+                  }
+                </Day>
+              </Cell>
             ))}
           </Row>
-        </TableHead>
-        <TableBody>
-          {chunk(state.days, 7).map((days: any, i: number) => (
-            <Row key={i} week={days[0].week}>
-              <Cell isWeek={true}>
-                <WeekNumber
-                  isCurrentWeek={days[0].isCurrentWeek}
-                >
-                  {days[0].week}
-                </WeekNumber>
-              </Cell>
-              {days.map((day: any, i: number) => (
-                <Cell key={i}>
-                  <Day
-                    isCurrentMonth={day.isCurrentMonth}
-                    isCurrentWeek={day.isCurrentWeek}
-                    isWorkFree={day.isWorkFree}
-                    isRedDay={day.isRedDay}
-                    isToday={day.isToday}
-                    isVacation={day.isVacation}
-                  >
-                    <DateLabel
-                      dayNumber={day.dateArr[2]}
-                      occasion={day.occasion}
-                    />
-                    {
-                      day.timeReport &&
-                      <DailyHours timeReport={day.timeReport} />
-                    }
-                  </Day>
-                </Cell>
-              ))}
-            </Row>
-          ))}
-        </TableBody>
-      </Table>
-    </>
+        ))}
+      </TableBody>
+    </Table>
   );
 };

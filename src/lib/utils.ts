@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  * Builds an url with params.
  * 
@@ -22,6 +24,12 @@ export const buildUrl = (url: string, params: any) => url + Object.keys(params)
 export const roundWith = (value: number, point: number) =>
   Math.round(value * (1 / point)) / (1 / point);
 
+const HOURS_TEMPLATE = {
+  sick: 0,
+  billable: 0,
+  regular: 0,
+  available: 0
+};
 
 /**
  * Applies data given from the APIs to month days.
@@ -42,47 +50,52 @@ export const applyData = (month: any, { togglData, weekendData, googleData }: an
       }
     }
 
-    if (togglData) {
-      day.timeReport = null;
+    day.timeReport = {
+      hours: { ...HOURS_TEMPLATE },
+      projects: []
+    };
 
+    if (day.dayOfWeek > 5 || day.occasion) {
+      day.timeReport.hours.available = 0;
+    } else if (weekendData[i + 1] && weekendData[i + 1].occasion) {
+      day.timeReport.hours.available = 4;
+    } else {
+      day.timeReport.hours.available = 8;
+    }
+
+    if (togglData) {
       let tgDay = togglData.find((d: any) => d.date === day.date);
 
       if (tgDay) {
         const { hours, projects } = tgDay;
-  
-        day.timeReport = {
-          hours,
-          projects,
-        };
+
+        day.timeReport.hours.sick = hours.sick;
+        day.timeReport.hours.regular = hours.regular;
+        day.timeReport.hours.billable = hours.billable;
+        day.timeReport.projects = projects;
       }
     }
   });
 };
 
 export const summerizeHours = (days: any, startDate: string, endDate: string) => {
-  let template = {
-    sick: 0,
-    billable: 0,
-    regular: 0,
-    available: 0
-  };
+  const todayDate = moment().add(1, 'day').format('YYYY-MM-DD');
 
   let weekHours: any = {};
-  let monthHours = { ...template };
+  let monthHours = { ...HOURS_TEMPLATE, past: 0 };
 
   days.forEach((day: any) => {
     if (day.date < startDate || day.date > endDate) return;
 
-    weekHours[day.week] = weekHours[day.week] || { ...template };
+    weekHours[day.week] = weekHours[day.week] || { ...HOURS_TEMPLATE };
 
-    if (!day.isWorkFree) {
-      weekHours[day.week].available += 8;
-    }
+    weekHours[day.week].available += day.timeReport.hours.available;
+    weekHours[day.week].sick += day.timeReport.hours.sick;
+    weekHours[day.week].billable += day.timeReport.hours.billable;
+    weekHours[day.week].regular += day.timeReport.hours.regular;
 
-    if (day.timeReport) {
-      weekHours[day.week].sick += day.timeReport.hours.sick;
-      weekHours[day.week].billable += day.timeReport.hours.billable;
-      weekHours[day.week].regular += day.timeReport.hours.regular;
+    if (day.date < todayDate) {
+      monthHours.past += day.timeReport.hours.available - day.timeReport.hours.sick;
     }
   });
 
