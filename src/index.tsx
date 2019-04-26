@@ -36,7 +36,7 @@ const Container = styled.div`
   min-width: 800px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px;
+  padding: 20px 10px;
 `;
 
 const Grid = styled.div`
