@@ -141,10 +141,6 @@ const DayContent: any = styled.div`
     );
   `}
 
-  ${(props: any) => props.isToday && css`
-    font-weight: bold;
-  `}
-
   ${(props: any) => props.isVacation && css`
     color: #7475cc;
     background: repeating-linear-gradient(
@@ -223,6 +219,7 @@ export const Calendar = () => {
                     isVacation={day.isVacation}
                   >
                     <DateLabel
+                      isToday={day.isToday}
                       dayNumber={day.dateArr[2]}
                       occasion={day.timeReport.hours.available === 4 ? '(Halvdag)' : day.occasion}
                     />
