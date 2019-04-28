@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { lighten } from 'polished';
+import { Button } from 'elements';
 
 import {
   COLOR_GRAY,
@@ -18,31 +18,6 @@ const Nav = styled.nav`
   display: flex;
   margin: 15px 0;
 `;
-
-const Button = styled.button`
-  color: white;
-  background-color: ${COLOR_GRAY};
-  border: 0;
-  text-transform: uppercase;
-  padding: 6px 15px;
-  margin-right: 2px;
-
-  :hover {
-    background-color: ${lighten(.2, COLOR_GRAY)};
-    cursor: pointer;
-  }
-
-  :disabled {
-    background-color: ${lighten(.5, COLOR_GRAY)};
-    color: ${lighten(.67, COLOR_GRAY)};
-    cursor: default;
-  }
-
-  :focus {
-    outline: 0;
-  }
-`;
-
 
 export const Controls = () => {
   const { state, actions } = useContext(AppContext);
