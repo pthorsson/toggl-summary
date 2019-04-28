@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { COLOR_ORANGE } from 'config';
 
 const Wrapper: any = styled.div`
   display: flex;
@@ -27,7 +28,7 @@ const DayNumber: any = styled.div`
 
   ${(props: any) => props.isToday && css`
     ::after {
-      background-color: #ff9c60;
+      background-color: ${COLOR_ORANGE};
       color: white;
     }
   `}

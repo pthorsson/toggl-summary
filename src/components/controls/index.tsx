@@ -1,12 +1,17 @@
 import React, { useContext } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { lighten } from 'polished';
+
+import {
+  COLOR_GRAY,
+} from 'config';
 
 import { AppContext } from 'context';
 
 const Header = styled.div`
   font-size: 32px;
   font-weight: bold;
-  color: #454545;
+  color: ${COLOR_GRAY};
 `;
 
 const Nav = styled.nav`
@@ -16,21 +21,20 @@ const Nav = styled.nav`
 
 const Button = styled.button`
   color: white;
-  background-color: #454545;
+  background-color: ${COLOR_GRAY};
   border: 0;
   text-transform: uppercase;
   padding: 6px 15px;
   margin-right: 2px;
 
   :hover {
-    background-color: #656565;
+    background-color: ${lighten(.2, COLOR_GRAY)};
     cursor: pointer;
   }
 
   :disabled {
-    background-color: #656565;
-    color: #e5e5e5;
-    opacity: .5;
+    background-color: ${lighten(.5, COLOR_GRAY)};
+    color: ${lighten(.67, COLOR_GRAY)};
     cursor: default;
   }
 

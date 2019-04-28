@@ -1,5 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { lighten } from 'polished'
+import { COLOR_GREEN, COLOR_BLUE, COLOR_RED, COLOR_GRAY } from 'config';
 
 const Wrapper: any = styled.div`
   font-size: 13px;
@@ -9,19 +11,18 @@ const Wrapper: any = styled.div`
 
 const Line: any = styled.div`
   display: flex;
-  /* border-bottom: 1px solid rgba(0,0,0,.05); */
   padding: 2px 0;
 
   ${(props: any) => props.status === 'billable' && css`
-    color: #3f9b6a;
+    color: ${COLOR_GREEN};
   `}
 
   ${(props: any) => props.status === 'sick' && css`
-    color: #c94141;
+    color: ${COLOR_RED};
   `}
 
   ${(props: any) => props.status === 'regular' && css`
-    color: #7475cc;
+    color: ${COLOR_BLUE};
   `}
 
   &:last-child {
@@ -43,7 +44,7 @@ const Label: any = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
-  color: #999999;
+  color: ${lighten(.36, COLOR_GRAY)};
   padding-left: 5px;
 `;
 

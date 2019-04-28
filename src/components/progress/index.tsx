@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import styled, { css } from 'styled-components';
+import { COLOR_GRAY } from 'config';
 
 import { AppContext } from 'context';
 
@@ -12,7 +13,7 @@ const Value: any = styled.div`
   position: relative;
   font-size: 36px;
   padding: 10px 20px 30px 20px;
-  color: #454545;
+  color: ${COLOR_GRAY};
 
   ::after {
     opacity: .4;
@@ -52,8 +53,6 @@ export const Progress = () => {
 
   const balance = (billable + regular) - past;
   const billablePercentage = Math.round((billable / past) * 100) || 0;
-
-  console.log(billablePercentage);
 
   return (
     <Wrapper>
