@@ -3,6 +3,10 @@ import * as ReactDOM from 'react-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Normalize } from 'styled-normalize';
 
+import AppProvider from 'context';
+
+import { TimeReports } from 'pages/time-reports';
+
 import togglApi from 'lib/toggl-api';
 import googleSheetsApi from 'lib/google-sheets-api';
 
@@ -13,12 +17,6 @@ try {
 } catch (error) {
   console.log('Could not load vars');
 }
-
-import AppProvider from 'context';
-
-import { Progress } from 'components/progress';
-import { Controls } from 'components/controls';
-import { Calendar } from 'components/calendar';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -56,17 +54,7 @@ ReactDOM.render(
   <AppProvider>
     <Normalize />
     <GlobalStyle />
-    <Container>
-      <Grid>
-        <Cell>
-          <Controls />
-        </Cell>
-        <Cell>
-          <Progress />
-        </Cell>
-      </Grid>
-      <Calendar />
-    </Container>
+    <TimeReports />
   </AppProvider>,
   document.getElementById('app-root')
 );
