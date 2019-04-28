@@ -6,7 +6,6 @@ import chunk from 'lodash/chunk';
 import {
   COLOR_BLUE,
   COLOR_GRAY,
-  COLOR_GREEN,
   COLOR_ORANGE,
   COLOR_RED
 } from 'config';
@@ -15,21 +14,6 @@ import { AppContext } from 'context';
 
 import { DateLabel } from './date-label';
 import { DailyHours } from './daily-hours';
-
-const SampleColorWrapper: any = styled.div`
-  display: flex;
-  margin-left: 1px;
-`;
-
-const SampleColor: any = styled.div`
-  width: 50px;
-  height: 50px;
-  margin: 0 1px;
-
-  ${(props: any) => props.color && css`
-    background: ${props.color};
-  `}
-`;
 
 const Table: any = styled.table`
   padding: 0;
@@ -199,14 +183,6 @@ export const Calendar = () => {
   const { state, actions } = useContext(AppContext);
 
   return (
-    <>
-    <SampleColorWrapper>
-      <SampleColor color={COLOR_GRAY}></SampleColor>
-      <SampleColor color={COLOR_BLUE}></SampleColor>
-      <SampleColor color={COLOR_GREEN}></SampleColor>
-      <SampleColor color={COLOR_ORANGE}></SampleColor>
-      <SampleColor color={COLOR_RED}></SampleColor>
-    </SampleColorWrapper>
     <Table>
       <TableHead>
         <Row hasHover={false}>
@@ -262,6 +238,5 @@ export const Calendar = () => {
         ))}
       </TableBody>
     </Table>
-    </>
   );
 };
