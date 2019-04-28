@@ -120,12 +120,8 @@ class TogglApi {
     let entries = [];
 
     while(page <= totalPages) {
-      console.log(`Fetching Toggl page ${page}`);
-
-      let res = await fetch(buildUrl(baseUrl, { ...params, page }), settings);
-      let { data, total_count, per_page } = await res.json();
-
-      // await this.delay(500);
+      const res = await fetch(buildUrl(baseUrl, { ...params, page }), settings);
+      const { data, total_count, per_page } = await res.json();
 
       entries.push(...data);
 

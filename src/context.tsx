@@ -99,6 +99,12 @@ export default class AppProvider extends React.Component<IProps, IState> {
         monthHours,
         isLoading: false
       });
+
+      console.group(`Monthly data: ${month}/${year}`);
+      console.log('days', this.state.days);
+      console.log('weekHours', this.state.weekHours);
+      console.log('monthHours', this.state.monthHours);
+      console.groupEnd();
     });
   }
 
