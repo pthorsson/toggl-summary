@@ -12,11 +12,13 @@ const Header = styled.div`
   font-size: 32px;
   font-weight: bold;
   color: ${COLOR_GRAY};
+  padding-left: 2px;
 `;
 
 const Nav = styled.nav`
   display: flex;
   margin: 15px 0;
+  padding-left: 2px;
 `;
 
 export const Controls = () => {

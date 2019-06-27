@@ -16,7 +16,7 @@ const Value: any = styled.div`
   color: ${COLOR_GRAY};
 
   ::after {
-    opacity: .4;
+    opacity: 0.4;
 
     ${(props: any) => css`
       content: '${props.suffix}';
@@ -29,7 +29,7 @@ const Value: any = styled.div`
     left: 0;
     width: 100%;
     text-align: center;
-    opacity: .25;
+    opacity: 0.25;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -41,8 +41,6 @@ const Value: any = styled.div`
   }
 `;
 
-
-
 export const Progress = () => {
   const { state } = useContext(AppContext);
   const { available, billable, past, regular, sick } = state.monthHours;
@@ -51,13 +49,21 @@ export const Progress = () => {
     return null;
   }
 
-  const balance = (billable + regular) - past;
+  const hoursTotal = billable + regular - past;
+  const billableTotal = billable - past;
   const billablePercentage = Math.round((billable / past) * 100) || 0;
 
   return (
     <Wrapper>
-      <Value label="balance" suffix="h">{(balance > 0 ? '+' : '') + balance}</Value>
-      <Value label="billable" suffix="%">{billablePercentage}</Value>
+      <Value label="total" suffix="h">
+        {(hoursTotal > 0 ? '+' : '') + hoursTotal}
+      </Value>
+      <Value label="billable" suffix="h">
+        {(billableTotal > 0 ? '+' : '') + billableTotal}
+      </Value>
+      <Value label="billable" suffix="%">
+        {billablePercentage}
+      </Value>
     </Wrapper>
   );
 };
