@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import * as ReactDOM from 'react-dom';
-import styled, { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 import { Normalize } from 'styled-normalize';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 
-import AppProvider from 'context';
-
+import { FONT_FAMILY, COLOR_GRAY } from 'config';
+import AppProvider, { AppContext } from 'context';
+import { CreateHash } from 'pages/create-hash';
 import { TimeReports } from 'pages/time-reports';
+import { Authenticate } from 'pages/authenticate';
 
 import togglApi from 'lib/toggl-api';
 import googleSheetsApi from 'lib/google-sheets-api';
@@ -13,14 +21,15 @@ import googleSheetsApi from 'lib/google-sheets-api';
 let vars: any = {};
 
 try {
-  vars = require('../vars');
+  vars = require('vars');
 } catch (error) {
   console.log('Could not load vars');
 }
 
 const GlobalStyle = createGlobalStyle`
   body {
-    font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+    font-family: ${FONT_FAMILY};
+    color: ${COLOR_GRAY};
   }
 
   *::before,
@@ -30,31 +39,40 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const Container = styled.div`
-  min-width: 800px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 10px;
-`;
-
-const Grid = styled.div`
-  display: flex;
-`;
-
-const Cell = styled.div`
-  flex: 1;
-`;
-
 togglApi.email = vars.TOGGL_EMAIL;
 togglApi.token = vars.TOGGL_TOKEN;
 togglApi.workspace = vars.TOGGL_WORKSPACE;
 googleSheetsApi.sheetId = vars.GOOGLE_SHEET;
 
+const Routes = () => {
+  const { state } = useContext(AppContext);
+
+  return (
+    <Router>
+      <Switch>
+        <Route
+          exact
+          path="/"
+          render={() =>
+            state.authenticated ? <Redirect to="/calendar" /> : <CreateHash />
+          }
+        />
+        {state.authenticated ? (
+          <Route exact path="/calendar" component={TimeReports} />
+        ) : (
+          <Route exact path="/calendar/:hash" component={Authenticate} />
+        )}
+        <Route render={() => <Redirect to="/" />} />
+      </Switch>
+    </Router>
+  );
+};
+
 ReactDOM.render(
   <AppProvider>
     <Normalize />
     <GlobalStyle />
-    <TimeReports />
+    <Routes />
   </AppProvider>,
   document.getElementById('app-root')
 );

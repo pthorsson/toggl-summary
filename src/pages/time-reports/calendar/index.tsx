@@ -182,6 +182,11 @@ const weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'satur
 export const Calendar = () => {
   const { state, actions } = useContext(AppContext);
 
+  if (!state.initiated) {
+    const date = new Date();
+    actions.setMonth(date.getFullYear(), date.getMonth() + 1); 
+  }
+
   return (
     <Table>
       <TableHead>

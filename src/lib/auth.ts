@@ -12,8 +12,8 @@ const ENCODING = 'utf8';
  * 
  * @returns {string} Cipher hash.
  */
-export const cipher = (content: string, password: string): string => {
-  const cipher = createCipher(ALGORITHM, password);
+export const cipher = (content: string, email: string, password: string): string => {
+  const cipher = createCipher(ALGORITHM, email + password);
 
   let encrypted = cipher.update(content, ENCODING, HASH_FORMAT);
   encrypted += cipher.final(HASH_FORMAT);
@@ -29,8 +29,8 @@ export const cipher = (content: string, password: string): string => {
  * 
  * @returns {string} Deciphered data or null if wrong password.
  */
-export const decipher = (hash: string, password: string): string => {
-  const decipher = createDecipher(ALGORITHM, password);
+export const decipher = (hash: string, email: string, password: string): string => {
+  const decipher = createDecipher(ALGORITHM, email + password);
 
   let decrypted = decipher.update(hash, HASH_FORMAT, ENCODING);
   decrypted += decipher.final(ENCODING);

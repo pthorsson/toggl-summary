@@ -16,9 +16,9 @@ interface ITogglDay {
 }
 
 class TogglApi {
-  private _token: string;
-  private _workspace: string;
-  private _email: string;
+  private _token: string = null;
+  private _workspace: string = null;
+  private _email: string = null;
 
   constructor() {
 
@@ -98,6 +98,29 @@ class TogglApi {
 
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  public async authenticate({ togglEmail, togglToken, togglWorkspace }: any) {
+    const date = new Date().toISOString().split('T')[0];
+
+    let params = {
+      user_agent: togglEmail,
+      workspace_id: togglWorkspace,
+      since: date,
+      until: date,
+      page: 1
+    };
+
+    let settings = {
+      method: 'GET',
+      headers:{
+        'Authorization': `Basic ${btoa(`${togglToken}:api_token`)}`
+      }
+    };
+
+    const res = await fetch(buildUrl(baseUrl, params), settings);
+
+    return res.status === 200;
   }
 
   public async loadDays(startDate: string, endDate: string): Promise<any> {

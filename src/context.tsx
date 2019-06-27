@@ -8,11 +8,13 @@ import togglApi from 'lib/toggl-api';
 
 import { applyData, summerizeHours } from 'lib/utils';
 
-export const AppContext = React.createContext<IContext|null>(null);
+export const AppContext = React.createContext<IContext | null>(null);
 
 interface IProps {}
 
 export interface IState {
+  initiated: boolean;
+  authenticated: boolean;
   year: number;
   month: number;
   monthName: string;
@@ -41,7 +43,7 @@ export interface IContext {
     nextMonth: () => void;
     previousMonth: () => void;
     selectWeek: (year: number, week: number) => void;
-  }
+  };
 }
 
 export default class AppProvider extends React.Component<IProps, IState> {
@@ -49,6 +51,8 @@ export default class AppProvider extends React.Component<IProps, IState> {
     super(props, state);
 
     this.state = {
+      initiated: false,
+      authenticated: false,
       year: null,
       month: null,
       monthName: null,
@@ -56,13 +60,8 @@ export default class AppProvider extends React.Component<IProps, IState> {
       weekHours: {},
       monthHours: {},
       isLoading: false,
-      selectedWeek: [0, 0]
+      selectedWeek: [0, 0],
     };
-  }
-
-  componentDidMount() {
-    const date = new Date();
-    this.setMonth(date.getFullYear(), date.getMonth() + 1); 
   }
 
   public setMonth(year: number, month: number) {
@@ -72,35 +71,43 @@ export default class AppProvider extends React.Component<IProps, IState> {
       year,
       month,
       monthName: monthData.date.format('MMMM'),
-      isLoading: true
+      isLoading: true,
+      initiated: true,
     });
 
     Promise.all([
-      weekendsApi.loadDays(monthData.monthSpanPadded[0], monthData.monthSpanPadded[1]),
-      googleSheetsApi.loadDays(monthData.monthSpanPadded[0], monthData.monthSpanPadded[1]),
-      togglApi.loadDays(monthData.monthSpan[0], monthData.monthSpan[1])
+      weekendsApi.loadDays(
+        monthData.monthSpanPadded[0],
+        monthData.monthSpanPadded[1]
+      ),
+      googleSheetsApi.loadDays(
+        monthData.monthSpanPadded[0],
+        monthData.monthSpanPadded[1]
+      ),
+      togglApi.loadDays(monthData.monthSpan[0], monthData.monthSpan[1]),
     ]).then(data => {
       const [weekendData, googleData, togglData] = data;
 
       applyData(monthData, {
         weekendData,
         googleData,
-        togglData
+        togglData,
       });
 
-      let {
-        weekHours,
-        monthHours
-      } = summerizeHours(monthData.days, monthData.monthSpan[0], monthData.monthSpan[1]);
+      let { weekHours, monthHours } = summerizeHours(
+        monthData.days,
+        monthData.monthSpan[0],
+        monthData.monthSpan[1]
+      );
 
       this.setState({
         days: monthData.days.slice(),
         weekHours,
         monthHours,
-        isLoading: false
+        isLoading: false,
       });
 
-      console.group(`Monthly data: ${month}/${year}`);
+      console.groupCollapsed(`Monthly data: ${month}/${year}`);
       console.log('days', this.state.days);
       console.log('weekHours', this.state.weekHours);
       console.log('monthHours', this.state.monthHours);
@@ -109,7 +116,8 @@ export default class AppProvider extends React.Component<IProps, IState> {
   }
 
   public nextMonth() {
-    const year = this.state.month === 12 ? this.state.year + 1 : this.state.year;
+    const year =
+      this.state.month === 12 ? this.state.year + 1 : this.state.year;
     const month = this.state.month === 12 ? 1 : this.state.month + 1;
     this.setMonth(year, month);
   }
@@ -121,7 +129,7 @@ export default class AppProvider extends React.Component<IProps, IState> {
   }
 
   public selectWeek(year: number, week: number) {
-    this.setState({ selectedWeek: [ year, week ]});
+    this.setState({ selectedWeek: [year, week] });
   }
 
   render() {
@@ -131,13 +139,13 @@ export default class AppProvider extends React.Component<IProps, IState> {
         setMonth: this.setMonth.bind(this),
         nextMonth: this.nextMonth.bind(this),
         previousMonth: this.previousMonth.bind(this),
-        selectWeek: this.selectWeek.bind(this)
-      }
+        selectWeek: this.selectWeek.bind(this),
+      },
     };
 
     return (
       <AppContext.Provider value={context}>
-        { this.props.children }
+        {this.props.children}
       </AppContext.Provider>
     );
   }
