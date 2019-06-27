@@ -2,24 +2,28 @@ import moment from 'moment';
 
 /**
  * Builds an url with params.
- * 
+ *
  * @param {string} url
  * @param {any} params
- * 
- * @return {string} URL 
+ *
+ * @return {string} URL
  */
-export const buildUrl = (url: string, params: any) => url + Object.keys(params)
-  .map((key: string, i: number) => 
-    `${!i ? '?' : '&'}${key}=${encodeURIComponent(params[key])}`)
-  .join('');
+export const buildUrl = (url: string, params: any) =>
+  url +
+  Object.keys(params)
+    .map(
+      (key: string, i: number) =>
+        `${!i ? '?' : '&'}${key}=${encodeURIComponent(params[key])}`
+    )
+    .join('');
 
 /**
  * Rounds given number by given point.
- * 
+ *
  * @param {number} value
  * @param {number} point
- * 
- * @return {number} Rounded number 
+ *
+ * @return {number} Rounded number
  */
 export const roundWith = (value: number, point: number) =>
   Math.round(value * (1 / point)) / (1 / point);
@@ -28,14 +32,19 @@ const HOURS_TEMPLATE = {
   sick: 0,
   billable: 0,
   regular: 0,
-  available: 0
+  available: 0,
 };
 
 /**
  * Applies data given from the APIs to month days.
  */
-export const applyData = (month: any, { togglData, weekendData, googleData }: any) => {
+export const applyData = (
+  month: any,
+  { togglData, weekendData, googleData }: any
+) => {
   month.days.forEach((day: any, i: number) => {
+    let tomorrow = weekendData[i + 1] || {};
+
     if (weekendData) {
       day.isRedDay = weekendData[i].redDay;
       day.isWorkFree = weekendData[i].workFree;
@@ -43,7 +52,7 @@ export const applyData = (month: any, { togglData, weekendData, googleData }: an
     }
 
     if (googleData) {
-      let gsDay = googleData.find((d: any) => d.date === day.date)
+      let gsDay = googleData.find((d: any) => d.date === day.date);
 
       if (gsDay) {
         day.isVacation = gsDay.type === 'vacation';
@@ -52,12 +61,12 @@ export const applyData = (month: any, { togglData, weekendData, googleData }: an
 
     day.timeReport = {
       hours: { ...HOURS_TEMPLATE },
-      projects: []
+      projects: [],
     };
 
-    if (day.dayOfWeek > 5 || day.occasion) {
+    if (day.dayOfWeek > 5 || day.isWorkFree) {
       day.timeReport.hours.available = 0;
-    } else if (weekendData[i + 1] && weekendData[i + 1].occasion) {
+    } else if (day.dayOfWeek < 6 && tomorrow.redDay) {
       day.timeReport.hours.available = 4;
     } else {
       day.timeReport.hours.available = 8;
@@ -78,8 +87,14 @@ export const applyData = (month: any, { togglData, weekendData, googleData }: an
   });
 };
 
-export const summerizeHours = (days: any, startDate: string, endDate: string) => {
-  const todayDate = moment().add(1, 'day').format('YYYY-MM-DD');
+export const summerizeHours = (
+  days: any,
+  startDate: string,
+  endDate: string
+) => {
+  const todayDate = moment()
+    .add(1, 'day')
+    .format('YYYY-MM-DD');
 
   let weekHours: any = {};
   let monthHours = { ...HOURS_TEMPLATE, past: 0 };
@@ -95,7 +110,8 @@ export const summerizeHours = (days: any, startDate: string, endDate: string) =>
     weekHours[day.week].regular += day.timeReport.hours.regular;
 
     if (day.date < todayDate) {
-      monthHours.past += day.timeReport.hours.available - day.timeReport.hours.sick;
+      monthHours.past +=
+        day.timeReport.hours.available - day.timeReport.hours.sick;
     }
   });
 
@@ -108,3 +124,8 @@ export const summerizeHours = (days: any, startDate: string, endDate: string) =>
 
   return { weekHours, monthHours };
 };
+
+const EMAIL_PATTERN = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+export const validateEmail = (email: string): boolean =>
+  EMAIL_PATTERN.test(email);
