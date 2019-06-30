@@ -1,4 +1,4 @@
-const baseUrl =  'https://toggl.com/reports/api/v2/details';
+const baseUrl = 'https://toggl.com/reports/api/v2/details';
 
 import { buildUrl, roundWith } from 'lib/utils';
 
@@ -20,9 +20,7 @@ class TogglApi {
   private _workspace: string = null;
   private _email: string = null;
 
-  constructor() {
-
-  }
+  constructor() {}
 
   set token(token: string) {
     this._token = token;
@@ -44,15 +42,19 @@ class TogglApi {
       if (entry.project === null) return;
 
       let date = entry.start.match(/\d{4}-\d{2}-\d{2}/);
-      let type = /(billable|sick)/.test(entry.tags[0]) ? entry.tags[0] : 'regular';
+      let type = /(billable|sick)/.test(entry.tags[0])
+        ? entry.tags[0]
+        : 'regular';
 
       if (!days[date]) {
         days[date] = {
-          projects: []
-        }
+          projects: [],
+        };
       }
 
-      let project = days[date].projects.find((p: any) => p.label === entry.project);
+      let project = days[date].projects.find(
+        (p: any) => p.label === entry.project
+      );
       let hasProject = !!project;
 
       project = project || {
@@ -61,7 +63,7 @@ class TogglApi {
           sick: 0,
           billable: 0,
           regular: 0,
-        }
+        },
       };
 
       project.hours[type] += entry.dur / 1000 / 60 / 60;
@@ -81,16 +83,16 @@ class TogglApi {
       };
 
       day.projects.forEach((p: any) => {
-        hours.sick += p.hours.sick = roundWith(p.hours.sick, .25);
-        hours.billable += p.hours.billable = roundWith(p.hours.billable, .25);
-        hours.regular += p.hours.regular = roundWith(p.hours.regular, .25);
+        hours.sick += p.hours.sick = roundWith(p.hours.sick, 0.25);
+        hours.billable += p.hours.billable = roundWith(p.hours.billable, 0.25);
+        hours.regular += p.hours.regular = roundWith(p.hours.regular, 0.25);
       });
 
       return {
         date,
         hours,
-        projects: day.projects
-      }
+        projects: day.projects,
+      };
     });
 
     return daysArr;
@@ -108,14 +110,14 @@ class TogglApi {
       workspace_id: togglWorkspace,
       since: date,
       until: date,
-      page: 1
+      page: 1,
     };
 
     let settings = {
       method: 'GET',
-      headers:{
-        'Authorization': `Basic ${btoa(`${togglToken}:api_token`)}`
-      }
+      headers: {
+        Authorization: `Basic ${btoa(`${togglToken}:api_token`)}`,
+      },
     };
 
     const res = await fetch(buildUrl(baseUrl, params), settings);
@@ -128,21 +130,21 @@ class TogglApi {
       user_agent: this._email,
       workspace_id: this._workspace,
       since: startDate,
-      until: endDate
+      until: endDate,
     };
 
     let settings = {
       method: 'GET',
-      headers:{
-        'Authorization': `Basic ${btoa(`${this._token}:api_token`)}`
-      }
+      headers: {
+        Authorization: `Basic ${btoa(`${this._token}:api_token`)}`,
+      },
     };
 
     let page = 1;
     let totalPages = 1;
     let entries = [];
 
-    while(page <= totalPages) {
+    while (page <= totalPages) {
       const res = await fetch(buildUrl(baseUrl, { ...params, page }), settings);
       const { data, total_count, per_page } = await res.json();
 
@@ -159,7 +161,6 @@ class TogglApi {
 
     return days;
   }
-
 }
 
 export default new TogglApi();

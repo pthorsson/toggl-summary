@@ -129,3 +129,6 @@ const EMAIL_PATTERN = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".
 
 export const validateEmail = (email: string): boolean =>
   EMAIL_PATTERN.test(email);
+
+export const delay = (milliseconds: number) =>
+  new Promise(resolve => setTimeout(resolve, milliseconds));

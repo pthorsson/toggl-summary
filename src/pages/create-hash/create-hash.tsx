@@ -10,7 +10,17 @@ import { validateEmail } from 'lib/utils';
 import { cipher } from 'lib/auth';
 import { stringifySettings } from 'lib/settings-parser';
 
-import { Container, FormWrapper, Input, InputLabel, Button } from 'elements';
+import {
+  Container,
+  FormWrapper,
+  Input,
+  InputLabel,
+  Button,
+  Anchor,
+  Grid,
+  Cell,
+  Logo,
+} from 'elements';
 
 const ErrorMessage: any = styled.div`
   font-size: 14px;
@@ -27,8 +37,12 @@ const ERROR_MESSAGES: any = {
   passwordMatch: 'Password confirmation does not match',
 };
 
-export const CreateHash = () => {
-  const context = useContext(AppContext);
+interface IProps {
+  history: any;
+}
+
+export const CreateHash = ({ history }: IProps) => {
+  const { actions } = useContext(AppContext);
 
   const [formState, setFormState] = useState({
     loading: false,
@@ -64,16 +78,18 @@ export const CreateHash = () => {
       });
     }
 
-    if (dataState.password.length < 6) {
+    const togglStatus = await togglApi.authenticate(dataState);
+
+    if (!togglStatus) {
       return setFormState({
-        error: 'passwordLength',
+        error: 'toggl',
         loading: false,
       });
     }
 
-    if (dataState.password !== dataState.passwordConfirm) {
+    if (dataState.password.length < 6) {
       return setFormState({
-        error: 'passwordMatch',
+        error: 'passwordLength',
         loading: false,
       });
     }
@@ -89,11 +105,9 @@ export const CreateHash = () => {
       }
     }
 
-    const togglStatus = await togglApi.authenticate(dataState);
-
-    if (!togglStatus) {
+    if (dataState.password !== dataState.passwordConfirm) {
       return setFormState({
-        error: 'toggl',
+        error: 'passwordMatch',
         loading: false,
       });
     }
@@ -101,18 +115,50 @@ export const CreateHash = () => {
     const config = stringifySettings(dataState);
     const hash = cipher(config, dataState.togglEmail, dataState.password);
 
-    setDataState({
-      ...dataState,
-      config,
-      hash,
-    });
+    actions.setConfig(hash, config, dataState.togglEmail);
+    history.push(`/calendar/${hash}`);
   };
 
   const hasError = (errors: string[]) => errors.indexOf(formState.error) > -1;
 
   return (
     <Container>
+      <Grid justifyContent="center">
+        <Cell collapse>
+          <div
+            style={{
+              textAlign: 'center',
+              marginBottom: '40px',
+              marginTop: '10vh',
+            }}
+          >
+            <Logo />
+            <div
+              style={{
+                marginTop: '10px',
+                fontSize: '13px',
+                textTransform: 'uppercase',
+                letterSpacing: '.05em',
+              }}
+            >
+              Create calendar hash
+            </div>
+          </div>
+        </Cell>
+      </Grid>
       <FormWrapper>
+        <InputLabel hasError={hasError(['toggl', 'email'])}>
+          Toggl email
+        </InputLabel>
+        <Input
+          type="text"
+          name="togglEmail"
+          hasError={hasError(['toggl', 'email'])}
+          disabled={formState.loading}
+          value={dataState.togglEmail}
+          onChange={updateField}
+        />
+
         <InputLabel hasError={hasError(['toggl'])}>Toggl token</InputLabel>
         <Input
           type="text"
@@ -131,22 +177,12 @@ export const CreateHash = () => {
           value={dataState.togglWorkspace}
           onChange={updateField}
         />
-        <InputLabel hasError={hasError(['toggl', 'email'])}>
-          Toggl email
-        </InputLabel>
-        <Input
-          type="text"
-          name="togglEmail"
-          hasError={hasError(['toggl', 'email'])}
-          disabled={formState.loading}
-          value={dataState.togglEmail}
-          onChange={updateField}
-        />
 
         <InputLabel hasError={hasError(['google'])}>Google sheet id</InputLabel>
         <Input
           type="text"
           name="googleSpreatsheet"
+          placeholder="Leave blank to skip"
           hasError={hasError(['google'])}
           disabled={formState.loading}
           value={dataState.googleSpreatsheet}
@@ -178,13 +214,19 @@ export const CreateHash = () => {
         {formState.error && (
           <ErrorMessage>{ERROR_MESSAGES[formState.error]}</ErrorMessage>
         )}
-        <Button
-          onClick={generateHash}
-          disabled={formState.loading || formState.error}
-        >
-          Create calendar
-        </Button>
-        <pre>{JSON.stringify(dataState, null, 2)}</pre>
+        <Grid alignItems="center" justifyContent="space-between">
+          <Cell collapse>
+            <Button
+              onClick={generateHash}
+              disabled={formState.loading || formState.error}
+            >
+              Create calendar
+            </Button>
+          </Cell>
+          <Cell collapse>
+            <Anchor to="/authenticate">Authenticate</Anchor>
+          </Cell>
+        </Grid>
       </FormWrapper>
     </Container>
   );

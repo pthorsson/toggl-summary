@@ -13,18 +13,7 @@ import { FONT_FAMILY, COLOR_GRAY } from 'config';
 import AppProvider, { AppContext } from 'context';
 import { CreateHash } from 'pages/create-hash';
 import { TimeReports } from 'pages/time-reports';
-import { Authenticate } from 'pages/authenticate';
-
-import togglApi from 'lib/toggl-api';
-import googleSheetsApi from 'lib/google-sheets-api';
-
-let vars: any = {};
-
-try {
-  vars = require('vars');
-} catch (error) {
-  console.log('Could not load vars');
-}
+import { DecryptHash } from 'pages/decrypt-hash';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -39,30 +28,32 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-togglApi.email = vars.TOGGL_EMAIL;
-togglApi.token = vars.TOGGL_TOKEN;
-togglApi.workspace = vars.TOGGL_WORKSPACE;
-googleSheetsApi.sheetId = vars.GOOGLE_SHEET;
-
 const Routes = () => {
-  const { state } = useContext(AppContext);
+  const { state, actions } = useContext(AppContext);
 
   return (
     <Router>
       <Switch>
+        <Route exact path="/create-calendar" component={CreateHash} />
         <Route
           exact
-          path="/"
-          render={() =>
-            state.authenticated ? <Redirect to="/calendar" /> : <CreateHash />
+          path="/authenticate/:hash?"
+          render={({ match, history }) => (
+            <DecryptHash hash={match.params.hash} history={history} />
+          )}
+        />
+        <Route
+          exact
+          path="/calendar/:hash"
+          render={({ match }) =>
+            actions.isAuthenticated(match.params.hash) ? (
+              <TimeReports />
+            ) : (
+              <Redirect to={`/authenticate/${match.params.hash}`} />
+            )
           }
         />
-        {state.authenticated ? (
-          <Route exact path="/calendar" component={TimeReports} />
-        ) : (
-          <Route exact path="/calendar/:hash" component={Authenticate} />
-        )}
-        <Route render={() => <Redirect to="/" />} />
+        <Route render={() => <Redirect to="/authenticate" />} />
       </Switch>
     </Router>
   );
