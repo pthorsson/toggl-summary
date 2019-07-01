@@ -1,1 +1,5 @@
+# Redirect default Netlify subdomain to primary domain
+https://pathnoirtime.netlify.com/* https://time.pathnoir.com/:splat 301!
+
+# Serve SPA for all page requests
 /*  /index.html  200
