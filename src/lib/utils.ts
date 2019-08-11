@@ -64,7 +64,7 @@ export const applyData = (
       projects: [],
     };
 
-    if (day.dayOfWeek > 5 || day.isWorkFree) {
+    if (day.dayOfWeek > 5 || day.isWorkFree || day.isVacation) {
       day.timeReport.hours.available = 0;
     } else if (day.dayOfWeek < 6 && tomorrow.redDay) {
       day.timeReport.hours.available = 4;

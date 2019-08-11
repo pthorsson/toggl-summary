@@ -187,6 +187,16 @@ export const Calendar = () => {
     actions.setMonth(date.getFullYear(), date.getMonth() + 1); 
   }
 
+  const getDayLabel = (day: any) => {
+    let label;
+
+    if (day.isVacation) {
+      return `Vacation ${day.occasion || ''}`;
+    } else {
+      return `${day.occasion || ''} ${day.timeReport.hours.available === 4 ? '(Halvdag)' : ''}`;
+    }
+  }
+
   return (
     <Table>
       <TableHead>
@@ -230,7 +240,7 @@ export const Calendar = () => {
                     <DateLabel
                       isToday={day.isToday}
                       dayNumber={day.dateArr[2]}
-                      occasion={day.timeReport.hours.available === 4 ? '(Halvdag)' : day.occasion}
+                      occasion={getDayLabel(day).trim()}
                     />
                     { day.isCurrentMonth && 
                       <DailyHours timeReport={day.timeReport} availableHours={day.availableHours} />
