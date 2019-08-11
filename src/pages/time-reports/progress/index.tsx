@@ -51,12 +51,16 @@ export const Progress = () => {
 
   const hoursTotal = billable + regular - past;
   const billableTotal = billable - past;
+  const totalPercentage = Math.round(((billable + regular) / past) * 100) || 0;
   const billablePercentage = Math.round((billable / past) * 100) || 0;
 
   return (
     <Wrapper>
       <Value label="total" suffix="h">
         {(hoursTotal > 0 ? '+' : '') + hoursTotal}
+      </Value>
+      <Value label="total" suffix="%">
+        {totalPercentage}
       </Value>
       <Value label="billable" suffix="h">
         {(billableTotal > 0 ? '+' : '') + billableTotal}
